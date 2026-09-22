@@ -11,12 +11,6 @@ const express = require('express');
 const { createApiRouter } = require('./routes/api');
 const { WatchlistStore } = require('./services/watchlistStore');
 
-/**
- * @param {object} [options]
- * @param {string} [options.dataFile] Path to the watchlist JSON file.
- * @param {typeof globalThis.fetch} [options.fetchImpl] Injected HTTP client.
- * @returns {import('express').Express}
- */
 function createApp({ dataFile, fetchImpl } = {}) {
   const app = express();
   const store = new WatchlistStore(dataFile || path.join(__dirname, '..', 'data', 'watchlist.json'));
@@ -25,15 +19,13 @@ function createApp({ dataFile, fetchImpl } = {}) {
   app.use(express.static(path.join(__dirname, '..', 'public')));
   app.use('/api', createApiRouter({ store, fetchImpl }));
 
-  /** Unknown API paths return JSON, not the static 404 page. */
+  // Unknown API paths return JSON, not the static 404 page.
   app.use('/api', (req, res) => {
     res.status(404).json({ ok: false, error: 'Unknown endpoint' });
   });
 
-  /**
-   * Central error handler. Errors thrown by the services carry a `.status`;
-   * anything else is treated as a server fault and logged rather than leaked.
-   */
+  // Central error handler. Errors thrown by the services carry a `.status`;
+  // anything else is treated as a server fault and logged rather than leaked.
   // eslint-disable-next-line no-unused-vars
   app.use((err, req, res, next) => {
     const status = err.status || 500;

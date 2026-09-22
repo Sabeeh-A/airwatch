@@ -17,14 +17,7 @@
     legend: document.getElementById('legend')
   };
 
-  /**
-   * Call a JSON endpoint and unwrap the standard `{ ok }` envelope.
-   *
-   * @param {string} url
-   * @param {RequestInit} [options]
-   * @returns {Promise<object>} The parsed body when `ok` is true.
-   * @throws {Error} Carrying the server's message when `ok` is false.
-   */
+  // Call a JSON endpoint and unwrap the standard `{ ok }` envelope.
   async function api(url, options) {
     const res = await fetch(url, {
       headers: { 'Content-Type': 'application/json' },
@@ -40,26 +33,13 @@
     return body;
   }
 
-  /**
-   * Set a status line, optionally as an error.
-   * @param {HTMLElement} el
-   * @param {string} message
-   * @param {boolean} [isError]
-   */
   function setStatus(el, message, isError) {
     el.textContent = message;
     el.classList.toggle('error', Boolean(isError));
   }
 
-  /**
-   * Build the shared reading block used by both the search result and the cards.
-   *
-   * @param {object} location A location with `reading` and `band`.
-   * @param {object} [opts]
-   * @param {'save'|'remove'|null} [opts.action] Which button to render.
-   * @param {(location: object) => void} [opts.onAction]
-   * @returns {DocumentFragment}
-   */
+  // Build the shared reading block used by both the search result and the
+  // watchlist cards.
   function renderReading(location, opts = {}) {
     const frag = document.createDocumentFragment();
     const box = document.createElement('div');
@@ -136,7 +116,7 @@
     return frag;
   }
 
-  /** Dynamic aspect 1 — look a place up through the back-end. */
+  // Dynamic aspect 1 — look a place up through the back-end.
   async function handleSearch(event) {
     event.preventDefault();
     const query = els.input.value.trim();
@@ -163,11 +143,7 @@
     }
   }
 
-  /**
-   * Persist a location, then refresh the list so the two views cannot drift.
-   * @param {object} location
-   * @param {HTMLButtonElement} button
-   */
+  // Persist a location, then refresh the list so the two views cannot drift.
   async function saveLocation(location, button) {
     button.disabled = true;
     try {
@@ -193,11 +169,6 @@
     }
   }
 
-  /**
-   * Remove a location and refresh.
-   * @param {object} location
-   * @param {HTMLButtonElement} button
-   */
   async function removeLocation(location, button) {
     button.disabled = true;
     try {
@@ -210,7 +181,7 @@
     }
   }
 
-  /** Dynamic aspect 2 — load the saved list with a live reading for each entry. */
+  // Dynamic aspect 2 — load the saved list with a live reading for each entry.
   async function loadWatchlist() {
     setStatus(els.watchlistStatus, 'Loading your saved locations…');
     try {
@@ -237,7 +208,7 @@
     }
   }
 
-  /** Render the colour legend from the server, so the scale is defined once. */
+  // Render the colour legend from the server, so the scale is defined once.
   async function loadLegend() {
     try {
       const { bands } = await api('/api/bands');

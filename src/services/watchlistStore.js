@@ -11,32 +11,13 @@
 const fs = require('fs/promises');
 const path = require('path');
 
-/**
- * @typedef {object} WatchlistEntry
- * @property {string} id Stable identifier, derived from rounded coordinates.
- * @property {string} name Place name as returned by the geocoder.
- * @property {string} country Country name, may be empty.
- * @property {number} latitude
- * @property {number} longitude
- * @property {string} addedAt ISO-8601 timestamp of insertion.
- */
-
 class WatchlistStore {
-  /**
-   * @param {string} filePath Absolute path to the JSON file backing the store.
-   */
   constructor(filePath) {
     this.filePath = filePath;
   }
 
-  /**
-   * Read every saved entry, newest first.
-   *
-   * A missing file is treated as an empty list rather than an error so that a
-   * fresh checkout runs without a setup step.
-   *
-   * @returns {Promise<WatchlistEntry[]>}
-   */
+  // A missing file is treated as an empty list rather than an error so that a
+  // fresh checkout runs without a setup step.
   async all() {
     try {
       const raw = await fs.readFile(this.filePath, 'utf8');
@@ -48,13 +29,7 @@ class WatchlistStore {
     }
   }
 
-  /**
-   * Insert an entry, ignoring duplicates by `id`.
-   *
-   * @param {WatchlistEntry} entry
-   * @returns {Promise<{created: boolean, entries: WatchlistEntry[]}>}
-   *   `created` is false when the location was already present.
-   */
+  // Insert an entry, ignoring duplicates by `id`.
   async add(entry) {
     const entries = await this.all();
     if (entries.some((e) => e.id === entry.id)) {
@@ -65,12 +40,7 @@ class WatchlistStore {
     return { created: true, entries: next };
   }
 
-  /**
-   * Remove an entry by id.
-   *
-   * @param {string} id
-   * @returns {Promise<{removed: boolean, entries: WatchlistEntry[]}>}
-   */
+  // Remove an entry by id.
   async remove(id) {
     const entries = await this.all();
     const next = entries.filter((e) => e.id !== id);
@@ -81,15 +51,9 @@ class WatchlistStore {
     return { removed: true, entries: next };
   }
 
-  /**
-   * Write the list atomically.
-   *
-   * The data is written to a temporary file and renamed into place, so a crash
-   * mid-write cannot leave a truncated JSON file that the next read would reject.
-   *
-   * @param {WatchlistEntry[]} entries
-   * @returns {Promise<void>}
-   */
+  // Write the list atomically: to a temporary file, then renamed into place,
+  // so a crash mid-write cannot leave a truncated JSON file that the next
+  // read would reject.
   async #write(entries) {
     await fs.mkdir(path.dirname(this.filePath), { recursive: true });
     const tmp = `${this.filePath}.tmp`;

@@ -8,30 +8,18 @@
 const express = require('express');
 const { fetchAirQuality, bandFor } = require('../services/airQuality');
 
-/**
- * Build the API router.
- *
- * The store and the HTTP client are passed in rather than imported directly,
- * which is what lets the test suite run the real routes against a temporary
- * file and a stubbed upstream API.
- *
- * @param {object} deps
- * @param {import('../services/watchlistStore').WatchlistStore} deps.store
- * @param {typeof globalThis.fetch} [deps.fetchImpl]
- * @returns {import('express').Router}
- */
+// The store and the HTTP client are passed in rather than imported directly,
+// which is what lets the test suite run the real routes against a temporary
+// file and a stubbed upstream API.
 function createApiRouter({ store, fetchImpl }) {
   const router = express.Router();
 
-  /** Health probe, used by the README's smoke test. */
+  // Health probe, used by the README's smoke test.
   router.get('/health', (req, res) => {
     res.json({ ok: true, status: 'up' });
   });
 
-  /**
-   * Dynamic aspect 1: live air-quality lookup.
-   * GET /api/air?q=Berlin
-   */
+  // Dynamic aspect 1: live air-quality lookup. GET /api/air?q=Berlin
   router.get('/air', async (req, res, next) => {
     try {
       const result = await fetchAirQuality(req.query.q, { fetchImpl });
@@ -41,13 +29,10 @@ function createApiRouter({ store, fetchImpl }) {
     }
   });
 
-  /**
-   * Dynamic aspect 2: the persisted watchlist, returned with a live reading for
-   * each saved location. Readings are fetched concurrently; a location whose
-   * upstream call fails is still returned, flagged with `reading: null`, so one
-   * bad response cannot blank the whole dashboard.
-   * GET /api/watchlist
-   */
+  // Dynamic aspect 2: the persisted watchlist, returned with a live reading for
+  // each saved location. Readings are fetched concurrently; a location whose
+  // upstream call fails is still returned, flagged with `reading: null`, so one
+  // bad response cannot blank the whole dashboard. GET /api/watchlist
   router.get('/watchlist', async (req, res, next) => {
     try {
       const entries = await store.all();
@@ -67,7 +52,7 @@ function createApiRouter({ store, fetchImpl }) {
     }
   });
 
-  /** POST /api/watchlist — save a location. */
+  // POST /api/watchlist — save a location.
   router.post('/watchlist', async (req, res, next) => {
     try {
       const { id, name, country, latitude, longitude } = req.body || {};
@@ -81,7 +66,7 @@ function createApiRouter({ store, fetchImpl }) {
     }
   });
 
-  /** DELETE /api/watchlist/:id — remove a saved location. */
+  // DELETE /api/watchlist/:id — remove a saved location.
   router.delete('/watchlist/:id', async (req, res, next) => {
     try {
       const { removed } = await store.remove(req.params.id);
@@ -92,7 +77,7 @@ function createApiRouter({ store, fetchImpl }) {
     }
   });
 
-  /** GET /api/bands — the legend, so the colour scale lives in one place only. */
+  // GET /api/bands — the legend, so the colour scale lives in one place only.
   router.get('/bands', (req, res) => {
     res.json({ ok: true, bands: [10, 30, 50, 70, 90, 110].map((v) => bandFor(v)) });
   });
