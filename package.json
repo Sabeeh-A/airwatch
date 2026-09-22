@@ -1,0 +1,23 @@
+{
+  "name": "airwatch",
+  "version": "1.0.0",
+  "description": "Air-quality watchlist web application (IU DLBCSPJWD01 portfolio project)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "jest --runInBand"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.22.2"
+  },
+  "devDependencies": {
+    "jest": "^30.5.1",
+    "supertest": "^7.2.2"
+  },
+  "engines": {
+    "node": ">=18"
+  }
+}

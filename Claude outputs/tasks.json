@@ -1,0 +1,31 @@
+{
+  // Runs "npm start" as a background task so the Chrome-debug launch config
+  // (see launch.json) can wait for the server to be ready before opening a tab.
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "Start AirWatch server",
+      "type": "shell",
+      "command": "npm start",
+      "isBackground": true,
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "clear": true
+      },
+      "problemMatcher": {
+        "pattern": {
+          "regexp": "^__never_matches__$",
+          "file": 1,
+          "location": 2,
+          "message": 3
+        },
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": "^> airwatch@",
+          "endsPattern": "^AirWatch running at"
+        }
+      }
+    }
+  ]
+}
