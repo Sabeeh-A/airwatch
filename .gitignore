@@ -3,3 +3,4 @@ data/watchlist.json
 data/*.tmp
 .DS_Store
 *.log
+screencast.mp4 
